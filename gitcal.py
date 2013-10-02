@@ -13,9 +13,9 @@ Options:
 from docopt import docopt
 import calendar, datetime
 import requests
+import math
 import os
 
-_color_func = lambda x: [0,1][x>0]+[0,1][x>13]+[0,1][x>27]+[0,1][x>41]
 _color_table = [240, 228, 107, 28, 22]
 
 def color(c, s):
@@ -48,6 +48,7 @@ def get_calendar(user):
 def print_calendar(cal):
     """Prints a calendar to the terminal (assumes xterm-256color)
     """
+    max_commits = float(max([max(i) for i in cal]))
     print '  '+''.join(calendar.month_name[(i+9)%12+1][:3]+' '*(5+(i%2)*1) for i in range(12))
     for y in range(7):
         print [' ','M',' ','W',' ','F',' '][y],
@@ -55,7 +56,8 @@ def print_calendar(cal):
             if cal[y][x] == -1:
                 print ' ',
             else:
-                c = _color_table[_color_func(cal[y][x])]
+                index = int(math.ceil((4*cal[y][x])/max_commits))
+                c = _color_table[index]
                 print color(c,'█'),
         print
 
