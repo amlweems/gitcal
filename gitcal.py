@@ -35,7 +35,7 @@ def get_calendar(user):
     url = "https://github.com/users/{0}/contributions_calendar_data".format(user)
     r = requests.get(url)
     if r.status_code != 200:
-        return cal
+        return None
     data = r.json()
     data = [[get_date(i[0]), i[1]] for i in data]
     offset = (data[0][0].weekday()+1)%7
@@ -49,6 +49,7 @@ def print_calendar(cal):
     """Prints a calendar to the terminal (assumes xterm-256color)
     """
     max_commits = float(max([max(i) for i in cal]))
+    if max_commits == 0.0: max_commits = 1.0
     print '  '+''.join(calendar.month_name[(i+9)%12+1][:3]+' '*(5+(i%2)*1) for i in range(12))
     for y in range(7):
         print [' ','M',' ','W',' ','F',' '][y],
@@ -65,4 +66,7 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version='gitcal 0.1')
     name = arguments['<username>'] if arguments['<username>'] else os.getlogin()
     cal = get_calendar(name)
-    print_calendar(cal)
+    if cal:
+        print_calendar(cal)
+    else:
+        print "Error: username {0} was not found".format(name)
