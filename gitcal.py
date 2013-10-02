@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """Usage:
-    gitcal.py [<username>]
+    gitcal.py [<username>] [-b | --block]
 
 Options:
     <username>    GitHub username (defaults to current user)
+    -b --block    print colors as solid blocks instead of individual rects
     -h --help     display this help message
     -v --version  display the current version
 """
@@ -14,14 +15,18 @@ from docopt import docopt
 import calendar, datetime
 import requests
 import math
+import sys
 import os
 
 _color_table = [240, 228, 107, 28, 22]
 
-def color(c, s):
+def color(c, s, background):
     """Returns the string representing the ANSI code for a color
     """
-    return "\033[38;05;" + str(c) + "m" + s + "\033[0m"
+    if (c == 0):
+        return "\033[0m"+s
+    else:
+        return "\033["+["38","48"][background]+";05;" + str(c) + "m" + s + "\033[0m"
 
 def get_date(s):
     """Converts a date string of format YYYY/MM/DD to datetime
@@ -52,15 +57,20 @@ def print_calendar(cal):
     if max_commits == 0.0: max_commits = 1.0
     print '  '+''.join(calendar.month_name[(i+9)%12+1][:3]+' '*(5+(i%2)*1) for i in range(12))
     for y in range(7):
-        print [' ','M',' ','W',' ','F',' '][y],
+        print [' ','M',' ','W',' ','F',' '][y]+" ",
         for x in range(53):
             if cal[y][x] == -1:
-                print ' ',
+                sys.stdout.write("  ")
             else:
                 index = int(math.ceil((4*cal[y][x])/max_commits))
                 c = _color_table[index]
-                print color(c,'█'),
-        print
+                if arguments['--block']:
+                    if index == 0: c = 0
+                    sys.stdout.write(color(c, "  ", True))
+                else:
+                    sys.stdout.write(color(c, "█", False))
+                    sys.stdout.write(" ")
+        sys.stdout.write('\n')
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, version='gitcal 0.1')
