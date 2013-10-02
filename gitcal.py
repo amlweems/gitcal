@@ -1,9 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Usage:
+    gitcal.py [<username>]
+
+Options:
+    <username>  GitHub username (defaults to current user)
+    -h          display this help message
+"""
+
+from docopt import docopt
 import calendar, datetime
 import requests
-import os, sys
+import os
 
 _color_func = lambda x: [0,1][x>0]+[0,1][x>13]+[0,1][x>27]+[0,1][x>41]
 _color_table = [240, 228, 107, 28, 22]
@@ -47,9 +56,7 @@ def print_calendar(cal):
         print
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        name = sys.argv[1]
-    else:
-        name = os.getlogin()
+    arguments = docopt(__doc__, version='HP Photosmart 6510 B211a WebScan')
+    name = arguments['<username>'] if arguments['<username>'] else os.getlogin()
     cal = get_calendar(name)
     print_calendar(cal)
