@@ -30,7 +30,7 @@ def get_date(s):
 def get_calendar(user):
     """Returns the calendar of a user in a 2 dimensional array (ready for printing)
     """
-    cal = [[0 for i in range(53)] for j in range(7)]
+    cal = [[-1 for i in range(53)] for j in range(7)]
     url = "https://github.com/users/{0}/contributions_calendar_data".format(user)
     r = requests.get(url)
     if r.status_code != 200:
@@ -51,8 +51,11 @@ def print_calendar(cal):
     for y in range(7):
         print [' ','M',' ','W',' ','F',' '][y],
         for x in range(53):
-            c = _color_table[_color_func(cal[y][x])]
-            print color(c,'█'),
+            if cal[y][x] == -1:
+                print ' ',
+            else:
+                c = _color_table[_color_func(cal[y][x])]
+                print color(c,'█'),
         print
 
 if __name__ == "__main__":
