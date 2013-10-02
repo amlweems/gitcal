@@ -59,7 +59,7 @@ def print_calendar(cal):
         print
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__, version='HP Photosmart 6510 B211a WebScan')
+    arguments = docopt(__doc__, version='gitcal 0.1')
     name = arguments['<username>'] if arguments['<username>'] else os.getlogin()
     cal = get_calendar(name)
     print_calendar(cal)
