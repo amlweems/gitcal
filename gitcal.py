@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """Usage:
-    gitcal.py [<username>] [-b | --block]
+    gitcal.py [<username>] [-b | --block] [-t | --today]
 
 Options:
     <username>    GitHub username (defaults to current user)
     -b --block    print colors as solid blocks instead of individual rects
+    -t --today    display the number of contributions for today only
     -h --help     display this help message
     -v --version  display the current version
 """
@@ -33,15 +34,20 @@ def get_date(s):
     """
     return datetime.datetime.strptime(s, "%Y/%m/%d")
 
-def get_calendar(user):
-    """Returns the calendar of a user in a 2 dimensional array (ready for printing)
-    """
-    cal = [[-1 for i in range(53)] for j in range(7)]
+def get_data(user):
     url = "https://github.com/users/{0}/contributions_calendar_data".format(user)
     r = requests.get(url)
     if r.status_code != 200:
         return None
     data = r.json()
+    return data
+
+def get_calendar(user):
+    """Returns the calendar of a user in a 2 dimensional array (ready for printing)
+    """
+    cal = [[-1 for i in range(53)] for j in range(7)]
+    data = get_data(user)
+    if data == None: return None
     data = [[get_date(i[0]), i[1]] for i in data]
     offset = (data[0][0].weekday()+1)%7
     for i in range(len(data)):
@@ -75,8 +81,15 @@ def print_calendar(cal):
 if __name__ == "__main__":
     arguments = docopt(__doc__, version='gitcal 0.1')
     name = arguments['<username>'] if arguments['<username>'] else os.getlogin()
-    cal = get_calendar(name)
-    if cal:
-        print_calendar(cal)
+    if arguments['--today']:
+        data = get_data(name)
+        if data:
+            print "Commits on {0}: {1}".format(data[-1][0], data[-1][1])
+        else:
+            print "Error: username {0} was not found".format(name)
     else:
-        print "Error: username {0} was not found".format(name)
+        cal = get_calendar(name)
+        if cal:
+            print_calendar(cal)
+        else:
+            print "Error: username {0} was not found".format(name)
