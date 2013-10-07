@@ -45,7 +45,7 @@ def get_data(user):
 def get_calendar(user):
     """Returns the calendar of a user in a 2 dimensional array (ready for printing)
     """
-    cal = [[-1 for i in range(53)] for j in range(7)]
+    cal = [[-1 for i in range(54)] for j in range(7)]
     data = get_data(user)
     if data == None: return None
     data = [[get_date(i[0]), i[1]] for i in data]
@@ -64,7 +64,7 @@ def print_calendar(cal):
     print '  '+''.join(calendar.month_name[(i+9)%12+1][:3]+' '*(5+(i%2)*1) for i in range(12))
     for y in range(7):
         print [' ','M',' ','W',' ','F',' '][y]+" ",
-        for x in range(53):
+        for x in range(54):
             if cal[y][x] == -1:
                 sys.stdout.write("  ")
             else:
