@@ -52,7 +52,7 @@ def get_calendar(user):
     offset = (data[0][0].weekday()+1)%7
     for i in range(len(data)):
         row = (i+offset)%7
-        col = (i+offset)/7
+        col = (i+offset)//7
         cal[row][col] = data[i][1]
     return cal
 
@@ -61,9 +61,10 @@ def print_calendar(cal):
     """
     max_commits = float(max([max(i) for i in cal]))
     if max_commits == 0.0: max_commits = 1.0
-    print '  '+''.join(calendar.month_name[(i+9)%12+1][:3]+' '*(5+(i%2)*1) for i in range(12))
+    sys.stdout.write('  '+''.join(calendar.month_name[(i+9)%12+1][:3]+' '*(5+(i%2)*1) for i in range(12)))
+    sys.stdout.write('\n')
     for y in range(7):
-        print [' ','M',' ','W',' ','F',' '][y]+" ",
+        sys.stdout.write([' ','M',' ','W',' ','F',' '][y]+" ")
         for x in range(54):
             if cal[y][x] == -1:
                 sys.stdout.write("  ")
@@ -84,12 +85,12 @@ if __name__ == "__main__":
     if arguments['--today']:
         data = get_data(name)
         if data:
-            print "Commits on {0}: {1}".format(data[-1][0], data[-1][1])
+            print("Commits on {0}: {1}".format(data[-1][0], data[-1][1]))
         else:
-            print "Error: username {0} was not found".format(name)
+            print("Error: username {0} was not found".format(name))
     else:
         cal = get_calendar(name)
         if cal:
             print_calendar(cal)
         else:
-            print "Error: username {0} was not found".format(name)
+            print("Error: username {0} was not found".format(name))
